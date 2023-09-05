@@ -1,0 +1,66 @@
+<mat-toolbar color="primary">
+  <span>Shift Management</span>
+</mat-toolbar>
+
+<mat-tab-group>
+  <mat-tab label="Add New Shift">
+    <mat-card>
+      <mat-card-title>Add New Shift</mat-card-title>
+      <mat-card-content>
+        <form (ngSubmit)="addShift()">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="name" name="name" type="text">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Type</mat-label>
+            <mat-select [(ngModel)]="type" name="type">
+              <mat-option value="shift">Shift</mat-option>
+              <mat-option value="onsite">OnSite</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="date" name="date">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">Add Shift</button>
+        </form>
+        <mat-list>
+          <mat-list-item *ngFor="let shift of shifts; let i = index">
+            {{ i+1 }}. {{ shift.date | date }} - {{ shift.name }} - {{ shift.type }}
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+
+  <mat-tab label="View Shifts">
+    <mat-card>
+      <mat-card-title>View Shifts</mat-card-title>
+      <mat-card-content>
+        <button mat-button (click)="switchView('grid')">Grid View</button>
+        <button mat-button (click)="switchView('calendar')">Calendar View</button>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+
+  <mat-tab label="User Profile">
+    <mat-card>
+      <mat-card-title>User Profile</mat-card-title>
+      <mat-card-content>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+
+  <mat-tab label="Dashboard">
+    <mat-card>
+      <mat-card-title>Dashboard</mat-card-title>
+      <mat-card-content>
+        <!-- ใส่สรุป Summary ที่นี่ -->
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+
+</mat-tab-group>
