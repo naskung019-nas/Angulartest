@@ -18,8 +18,8 @@ export class ChecklistTableComponent implements OnInit {
   name: string = '';
   type: string = '';
   hospitals: string = '';
-  startDate: string = '';  
-  endDate: string = ''; 
+  startDate: Date = new Date();
+  endDate: Date = new Date();  
   startTime: string = '';  
   endTime: string = '';  
   constructor(private shiftService: ShiftService, private cdr: ChangeDetectorRef) {}
