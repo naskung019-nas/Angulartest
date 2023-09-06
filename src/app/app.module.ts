@@ -18,6 +18,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { HttpClientModule } from '@angular/common/http';
+import { ShiftService } from './component/service/shift.service';
+import { MatRadioModule } from '@angular/material/radio';
 
 
 
@@ -46,10 +49,12 @@ import { MatListModule } from '@angular/material/list';
     MatNativeDateModule,
     FormsModule,
     MatListModule,
+    HttpClientModule,
+    MatRadioModule,
 
     
   ],
-  providers: [],
+  providers: [ShiftService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

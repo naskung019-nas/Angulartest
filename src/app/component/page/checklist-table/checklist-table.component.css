@@ -7,4 +7,21 @@
     margin: 10px;
     text-decoration: none;
   }
-  
+.my-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.my-table th, .my-table td {
+  border: 1px solid #ccc;
+  text-align: left;
+  padding: 8px;
+}
+
+.my-table th {
+  background-color: #f2f2f2;
+}
+
+.my-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}

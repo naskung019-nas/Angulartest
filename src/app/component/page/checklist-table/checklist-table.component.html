@@ -5,47 +5,85 @@
 <mat-tab-group>
   <mat-tab label="Add New Shift">
     <mat-card>
-      <mat-card-title>Add New Shift</mat-card-title>
       <mat-card-content>
         <form (ngSubmit)="addShift()">
           <mat-form-field>
-            <mat-label>Name</mat-label>
+            <mat-label>ชื่อ-นามสกุล</mat-label>
             <input matInput [(ngModel)]="name" name="name" type="text">
           </mat-form-field>
+          
           <mat-form-field>
-            <mat-label>Type</mat-label>
+            <mat-label>ประเภท</mat-label>
             <mat-select [(ngModel)]="type" name="type">
               <mat-option value="shift">Shift</mat-option>
               <mat-option value="onsite">OnSite</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field>
-            <mat-label>Date</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="date" name="date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-label>สถานที่</mat-label>
+            <input matInput [(ngModel)]="hospitals" name="hospitals" type="text">
           </mat-form-field>
+
+          <ng-container>
+            <mat-form-field>
+              <mat-label>Start Date</mat-label>
+              <input matInput [(ngModel)]="startDate" name="startDate" type="date">
+            </mat-form-field>
+        
+            <mat-form-field>
+              <mat-label>End Date</mat-label>
+              <input matInput [(ngModel)]="endDate" name="endDate" type="date">
+            </mat-form-field>
+        
+            <mat-form-field>
+              <mat-label>Start Time</mat-label>
+              <input matInput [(ngModel)]="startTime" name="startTime" type="time">
+            </mat-form-field>
+          
+            <mat-form-field>
+              <mat-label>End Time</mat-label>
+              <input matInput [(ngModel)]="endTime" name="endTime" type="time">
+            </mat-form-field>
+          </ng-container>
+
           <button mat-raised-button color="primary" type="submit">Add Shift</button>
         </form>
-        <mat-list>
-          <mat-list-item *ngFor="let shift of shifts; let i = index">
-            {{ i+1 }}. {{ shift.date | date }} - {{ shift.name }} - {{ shift.type }}
-          </mat-list-item>
-        </mat-list>
+        <mat-form-field>
+          <mat-label>ค้นหา</mat-label>
+          <input matInput [(ngModel)]="filterText" (input)="filterShifts()" placeholder="ค้นหา...">
+        </mat-form-field>
+
+        <mat-radio-group>
+          <mat-radio-button value="shift">Shift</mat-radio-button>
+          <mat-radio-button value="onsite">OnSite</mat-radio-button>
+        </mat-radio-group>
+        
+        
+        <table class="my-table">
+          <thead>
+            <tr>
+              <th (click)="sortTable('index')">ลำดับที่</th>
+              <th (click)="sortTable('date')">วันที่ <span>{{ sortField === 'date' ? (sortAscending ? '▲' : '▼') : '↕' }}</span></th>
+              <th (click)="sortTable('time')">เวลา</th>
+              <th (click)="sortTable('person_name')">ชื่อ-นามสกุล <span>{{ sortField === 'person_name' ? (sortAscending ? '▲' : '▼') : '↕' }}</span></th>
+              <th (click)="sortTable('type')">ประเภท <span>{{ sortField === 'type' ? (sortAscending ? '▲' : '▼') : '↕' }}</span></th> <!-- Add this line -->
+              <th (click)="sortTable('hospital')">สถานที่ <span>{{ sortField === 'hospital' ? (sortAscending ? '▲' : '▼') : '↕' }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let shift of filterShifts(); let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ shift.start_date }}-{{ shift.end_date }}</td>
+              <td>{{ shift.start_time }}-{{ shift.end_time }}</td>
+              <td>{{ shift.person_name }}</td>
+              <td>{{ shift.type }}</td>
+              <td>{{ shift.hospital }}</td>
+            </tr>
+          </tbody>
+        </table>
       </mat-card-content>
     </mat-card>
   </mat-tab>
-
-  <mat-tab label="View Shifts">
-    <mat-card>
-      <mat-card-title>View Shifts</mat-card-title>
-      <mat-card-content>
-        <button mat-button (click)="switchView('grid')">Grid View</button>
-        <button mat-button (click)="switchView('calendar')">Calendar View</button>
-      </mat-card-content>
-    </mat-card>
-  </mat-tab>
-
   <mat-tab label="User Profile">
     <mat-card>
       <mat-card-title>User Profile</mat-card-title>
@@ -53,7 +91,6 @@
       </mat-card-content>
     </mat-card>
   </mat-tab>
-<!-- เทส -->
   <mat-tab label="Dashboard">
     <mat-card>
       <mat-card-title>Dashboard</mat-card-title>
