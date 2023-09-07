@@ -16,19 +16,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 let shifts = [];
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "support_schedule",
-//   port: 3306,
-// });
-
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
-  database: "hospital_schedule",
+  database: "support_schedule",
   port: 8889,
 });
 
@@ -41,7 +33,35 @@ db.connect((err) => {
   }
 });
 
+// app.post('/addRecord', (req, res) => {
+//   const {name, type, hospitals, startTime, endTime, startDate, endDate } = req.body;
+//   const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
+//   const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
 
+//   let sql = "INSERT INTO ShiftsAndOnSite (person_name, type, start_date, end_date, start_time, end_time, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  
+//   db.query(sql, [name,type, formattedStartDate, formattedEndDate, startTime, endTime, hospitals], (err, result) => {
+//     if (err) {
+//       console.log("MySQL error", err);
+//       res.status(500).send({ success: false });
+//     } else {
+//       res.status(200).send({ success: true });
+//     }
+//   });
+// });
+
+// app.get('/getRecord', (req, res) => {
+//   const sql = "SELECT * FROM ShiftsAndOnSite";
+  
+//   db.query(sql, (err, result) => {
+//     if (err) {
+//       console.log("MySQL error", err);
+//       res.status(500).send({ success: false });
+//     } else {
+//       res.status(200).json(result);
+//     }
+//   });
+// });
 
 // Routes for registration and login
 // User registration route
@@ -114,38 +134,81 @@ db.connect((err) => {
 // });
 
 
-app.post('/addRecord', (req, res) => {
-  const {name, type, hospitals, startTime, endTime, startDate, endDate } = req.body;
-  const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
-  const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
 
-  let sql = "INSERT INTO ShiftsAndOnSite (person_name, type, start_date, end_date, start_time, end_time, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
-  
-  db.query(sql, [name,type, formattedStartDate, formattedEndDate, startTime, endTime, hospitals], (err, result) => {
+app.get('/users', (req, res) => {
+  const sql = "SELECT * FROM users";
+  db.query(sql, (err, results) => {
     if (err) {
-      console.log("MySQL error", err);
-      res.status(500).send({ success: false });
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/worksite', (req, res) => {
+  const sql = "SELECT * FROM work_site";
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+app.get('/assignment', (req, res) => {
+  const sql = "SELECT * FROM assignment";
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+
+// app.get('/dashboardSummary', (req, res) => {
+//   const sql = "SELECT * FROM support_schedule";
+//   db.query(sql, (err, results) => {
+//     if (err) {
+//       return res.status(500).json({ error: err.message });
+//     }
+//     res.json(results);
+//   });
+// });
+
+app.get('/support_schedule', (req, res) => {
+  const sql = "SELECT * FROM support_schedule";
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/support_schedule', (req, res) => {
+  const shiftData = req.body;
+
+  if (!shiftData.username) {
+    res.status(400).send({ error: 'Username cannot be null' });
+    return;
+  }
+
+  const query = 'INSERT INTO support_schedule SET ?';
+  db.query(query, shiftData, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send({ error: 'Error inserting data', message: err.message });
     } else {
-      res.status(200).send({ success: true });
+      res.send({ success: true, message: 'Data inserted successfully' });
     }
   });
 });
 
-app.get('/getRecord', (req, res) => {
-  const sql = "SELECT * FROM ShiftsAndOnSite";
-  
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.log("MySQL error", err);
-      res.status(500).send({ success: false });
-    } else {
-      res.status(200).json(result);
-    }
-  });
-});
+
 
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
+
 

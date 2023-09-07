@@ -25,3 +25,17 @@
 .my-table tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.container {
+  margin: 20px;
+}
+
+.summary,
+.calendar-view,
+.grid-view {
+  margin-bottom: 20px;
+}
