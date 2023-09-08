@@ -37,9 +37,6 @@ export class ChecklistTableComponent implements OnInit {
   selectedWorkSite: string = '';
   searchMonth: number | null = null;
   searchYear: number | null = null;
-  rowNumber: number = 1;
-  filteredShiftsByUsername: any[] = [];
-
 
   constructor(
     private shiftService: ShiftService,
@@ -213,9 +210,9 @@ export class ChecklistTableComponent implements OnInit {
     return window.location.reload();
   }
 
-  calculateRowNumber(shift: any): number {
-    return this.filteredShiftsByUsername.indexOf(shift) + 3;
-  }
+  
+
+
 
   
 }
