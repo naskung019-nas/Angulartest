@@ -18,6 +18,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { HttpClientModule } from '@angular/common/http';
+import { ShiftService } from './component/service/shift.service';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatMenuModule } from '@angular/material/menu';
+import { DashboardService } from './component/service/dashboard.sevice';
+import { DataService } from './component/service/data.service';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTableModule } from '@angular/material/table';
+import {  DatePipe } from '@angular/common';
+
+
 
 
 
@@ -46,10 +57,18 @@ import { MatListModule } from '@angular/material/list';
     MatNativeDateModule,
     FormsModule,
     MatListModule,
-
-    
+    HttpClientModule,
+    MatRadioModule,
+    MatMenuModule,
+    MatAutocompleteModule,
+    MatTableModule,
+    ],
+  providers: [
+    ShiftService,
+    DashboardService,
+    DataService,
+    DatePipe
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,65 +1,205 @@
-<mat-toolbar color="primary">
-  <span>Shift Management</span>
-</mat-toolbar>
-
-<mat-tab-group>
-  <mat-tab label="Add New Shift">
-    <mat-card>
-      <mat-card-title>Add New Shift</mat-card-title>
-      <mat-card-content>
-        <form (ngSubmit)="addShift()">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput [(ngModel)]="name" name="name" type="text">
+<div>
+  <mat-toolbar color="primary">
+    <span>Shift Management</span>
+  </mat-toolbar>
+  <mat-tab-group #matTabGroupReference>
+    <mat-tab label="Assignment">
+      <mat-card>
+        <mat-card-content>
+          <form (ngSubmit)="addShift()">
+            <mat-form-field>
+              <mat-label>ชื่อ</mat-label>
+              <input 
+                  type="text" 
+                  matInput 
+                  [matAutocomplete]="auto" 
+                  [(ngModel)]="selectedUser" 
+                  [ngModelOptions]="{standalone: true}"
+                  (input)="filterUsers($event)">
+                  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayUser">
+                    <mat-option *ngFor="let user of filteredUsers" [value]="user">
+                        {{ user.firstname }} {{ user.lastname }}
+                    </mat-option>
+                </mat-autocomplete>              
           </mat-form-field>
+          
+            <mat-form-field>
+              <mat-label>ประเภท</mat-label>
+              <mat-select [(ngModel)]="type" name="type">
+                  <mat-option *ngFor="let assignment of assignments" [value]="assignment.name" >
+                      {{ assignment.name }}
+                  </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>สถานที่</mat-label>
+                <input 
+                    type="text" 
+                    matInput 
+                    [matAutocomplete]="hospitalsAuto" 
+                    [(ngModel)]="hospitals" 
+                    [ngModelOptions]="{standalone: true}"
+                    (input)="filterWorkSites($event)">
+                <mat-autocomplete #hospitalsAuto="matAutocomplete">
+                  <mat-option *ngFor="let hospital of filteredWorkSites" [value]="hospital.site_name">
+                    {{ hospital.site_name }}
+                  </mat-option>
+                </mat-autocomplete>
+             </mat-form-field>
+              <ng-container>      
+              <mat-form-field>
+                <mat-label>Start Date and Time</mat-label>
+                <div fxLayout="row" fxLayoutGap="10px">
+                    <input fxFlex matInput [(ngModel)]="startDate" name="startDate" type="date">
+                    <input fxFlex matInput [(ngModel)]="startTime" name="startTime" type="time">
+                </div>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>End Date and Time</mat-label>
+              <div fxLayout="row" fxLayoutGap="10px">
+                  <input fxFlex matInput [(ngModel)]="endDate" name="endDate" type="date">
+                  <input fxFlex matInput [(ngModel)]="endTime" name="endTime" type="time">
+              </div>
+             </mat-form-field>
+            </ng-container>
+  
+            <button mat-raised-button color="primary" type="submit">Add Shift</button>
+          </form>
+
+          <div>
+            <h2 class="textHeader"> ค้นหาข้อมูล </h2>
+          </div>
+
           <mat-form-field>
-            <mat-label>Type</mat-label>
-            <mat-select [(ngModel)]="type" name="type">
-              <mat-option value="shift">Shift</mat-option>
-              <mat-option value="onsite">OnSite</mat-option>
+            <mat-label>ค้นหา</mat-label>
+              <input matInput [(ngModel)]="filterText" (input)="filterShifts()" placeholder="ค้นหา...">
+            </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>ประเภท</mat-label>
+            <mat-select [(value)]="selectedType" (selectionChange)="filterShifts()">
+                <mat-option *ngFor="let assignment of assignments" [value]="assignment.name" >
+                    {{ assignment.name }}
+                </mat-option>
             </mat-select>
           </mat-form-field>
+
           <mat-form-field>
-            <mat-label>Date</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="date" name="date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-label>สถานที่</mat-label>
+            <mat-select [(value)]="selectedWorkSite" (selectionChange)="filterShifts()"> 
+                <mat-option *ngFor="let hospital of workSites" [value]="hospital.site_name" >
+                    {{ hospital.site_name }}
+                </mat-option>
+            </mat-select>
           </mat-form-field>
-          <button mat-raised-button color="primary" type="submit">Add Shift</button>
-        </form>
-        <mat-list>
-          <mat-list-item *ngFor="let shift of shifts; let i = index">
-            {{ i+1 }}. {{ shift.date | date }} - {{ shift.name }} - {{ shift.type }}
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
-  </mat-tab>
 
-  <mat-tab label="View Shifts">
-    <mat-card>
-      <mat-card-title>View Shifts</mat-card-title>
-      <mat-card-content>
-        <button mat-button (click)="switchView('grid')">Grid View</button>
-        <button mat-button (click)="switchView('calendar')">Calendar View</button>
-      </mat-card-content>
-    </mat-card>
-  </mat-tab>
+          <button (click)="reload()">Reset</button>
 
-  <mat-tab label="User Profile">
-    <mat-card>
-      <mat-card-title>User Profile</mat-card-title>
-      <mat-card-content>
-      </mat-card-content>
-    </mat-card>
-  </mat-tab>
-<!-- เทส -->
-  <mat-tab label="Dashboard">
-    <mat-card>
-      <mat-card-title>Dashboard</mat-card-title>
-      <mat-card-content>
-      </mat-card-content>
-    </mat-card>
-  </mat-tab>
+           <table class="my-table">
+            <thead> 
+              <tr>
+                <th>ลำดับที่</th>
+                <th>วันเวลาเริ่ม</th>
+                <th>วันเวลาสิ้นสุด</th>
+                <th>ชื่อ-นามสกุล</th>
+                <th>ประเภท</th>
+                <th>สถานที่</th>
+            </tr>
+            </thead> 
+            <tbody>
+              <tr *ngFor="let shift of filteredShifts; let i = index">
+                <td>{{ i+1 }}</td>
+                <td>
+                  {{ shift.start_time | date:'dd/MM/yyyy' }} {{ shift.start_time | date:'HH:mm' }}
+                </td>
+                <td>
+                  {{ shift.end_time | date:'dd/MM/yyyy' }} {{ shift.end_time | date:'HH:mm' }}
+                </td>                
+                <td>{{ shift.firstname }} {{ shift.lastname }}</td>
+                <td>{{ shift.assign_typ || '-'  }}</td>
+                <td>{{ shift.site_name || '-' }}</td>
+                <button (click)="loadUserProfile(shift)">View</button>
+              </tr>
+            </tbody>
+            
+          </table> 
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
 
-</mat-tab-group>
+    <mat-tab label="User Profile">
+      <div class="userProfile" *ngIf="selectedUser">
+        <p>ชื่อ: {{ selectedUser.prefix }}  {{ selectedUser.firstname }} นามสกุล: {{ selectedUser.lastname }} ชื่อเล่น {{ selectedUser.nickname }}</p>
+        <p>Username: {{ selectedUser.username }} </p>
+        <p>Email: {{ selectedUser.email }} </p>
+        <table class="my-table">
+          <thead> 
+            <tr>
+              <th>ลำดับที่</th>
+              <th>วันเวลาเริ่ม</th>
+              <th>วันเวลาสิ้นสุด</th>
+              <th>ประเภท</th>
+              <th>สถานที่</th>
+            </tr>
+          </thead>
+          
+          <tbody>
+            <ng-container *ngFor="let shift of (filteredShifts); let i = index">
+              <tr *ngIf="shift.username === selectedUser.username">
+                <td>{{ i+1 }}</td>
+                <td>
+                  {{ shift.start_time | date:'dd/MM/yyyy' }} {{ shift.start_time | date:'HH:mm' }}
+                </td>
+                <td>
+                  {{ shift.end_time | date:'dd/MM/yyyy' }} {{ shift.end_time | date:'HH:mm' }}
+                </td>                
+                <td>{{ shift.assign_typ || '-'  }}</td>
+                <td>{{ shift.site_name || '-' }}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Dashboard">
+      <div>
+        <mat-toolbar color="primary">
+          <span>Shift Management - Admin Dashboard</span>
+          <span class="spacer"></span>
+          <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>Dashboard</button>
+            <button mat-menu-item>จัดการ User</button>
+            <button mat-menu-item>จัดการ Shift</button>
+            <button mat-menu-item>จัดการ On-Site</button>
+            <button mat-menu-item>จัดการ Hospital</button>
+          </mat-menu>
+        </mat-toolbar>
+        <div class="container">
+          <div class="summary">
+            <mat-card>
+              <mat-card-title>Dashboard Summary</mat-card-title>
+              <mat-card-content>
+                <div *ngIf="dashboardSummary">
+   
+                  <div *ngFor="let item of dashboardSummary">
+                    {{ item.summary }}: {{ item.value }}
+                  </div>
+                </div>
+              </mat-card-content>
+              
+            </mat-card>
+          </div>
+      
+          <div class="calendar-view">
+  
+          </div>
+          <div class="grid-view">
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
