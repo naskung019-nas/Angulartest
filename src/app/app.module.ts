@@ -26,6 +26,7 @@ import { DashboardService } from './component/service/dashboard.sevice';
 import { DataService } from './component/service/data.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
+import {  DatePipe } from '@angular/common';
 
 
 
@@ -61,13 +62,12 @@ import { MatTableModule } from '@angular/material/table';
     MatMenuModule,
     MatAutocompleteModule,
     MatTableModule,
-
-    
-  ],
+    ],
   providers: [
     ShiftService,
     DashboardService,
-    DataService
+    DataService,
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })
