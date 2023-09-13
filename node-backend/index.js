@@ -1,13 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
-const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const { readdirSync } = require('fs')
-const cors = require('cors');
-
-
+const { readdirSync } = require("fs");
+const cors = require("cors");
+const { auth, adminCheck } = require("./middleware/auth");
 
 const app = express();
 app.use(express.json());
@@ -19,11 +17,10 @@ let shifts = [];
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "root",
+  password: "",
   database: "support_schedule",
-  port: 8889,
+  port: 3306,
 });
-
 
 db.connect((err) => {
   if (err) {
@@ -39,7 +36,7 @@ db.connect((err) => {
 //   const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
 
 //   let sql = "INSERT INTO ShiftsAndOnSite (person_name, type, start_date, end_date, start_time, end_time, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
-  
+
 //   db.query(sql, [name,type, formattedStartDate, formattedEndDate, startTime, endTime, hospitals], (err, result) => {
 //     if (err) {
 //       console.log("MySQL error", err);
@@ -52,7 +49,7 @@ db.connect((err) => {
 
 // app.get('/getRecord', (req, res) => {
 //   const sql = "SELECT * FROM ShiftsAndOnSite";
-  
+
 //   db.query(sql, (err, result) => {
 //     if (err) {
 //       console.log("MySQL error", err);
@@ -122,20 +119,15 @@ db.connect((err) => {
 //   );
 // });
 
-
 /*readdirSync('./routes')
 .map((r)=> app.use('/api', require('./routes/'+r)))*/
-
-
 
 // const port = process.env.PORT;
 // app.listen(port, () => {
 //   console.log("Server is running on port " + port);
 // });
 
-
-
-app.get('/users', (req, res) => {
+app.get("/users", (req, res) => {
   const sql = "SELECT * FROM users";
   db.query(sql, (err, results) => {
     if (err) {
@@ -145,7 +137,7 @@ app.get('/users', (req, res) => {
   });
 });
 
-app.get('/worksite', (req, res) => {
+app.get("/worksite", (req, res) => {
   const sql = "SELECT * FROM work_site";
   db.query(sql, (err, results) => {
     if (err) {
@@ -154,7 +146,7 @@ app.get('/worksite', (req, res) => {
     res.json(results);
   });
 });
-app.get('/assignment', (req, res) => {
+app.get("/assignment", (req, res) => {
   const sql = "SELECT * FROM assignment";
   db.query(sql, (err, results) => {
     if (err) {
@@ -163,7 +155,6 @@ app.get('/assignment', (req, res) => {
     res.json(results);
   });
 });
-
 
 // app.get('/dashboardSummary', (req, res) => {
 //   const sql = "SELECT * FROM support_schedule";
@@ -175,7 +166,7 @@ app.get('/assignment', (req, res) => {
 //   });
 // });
 
-app.get('/support_schedule', (req, res) => {
+app.get("/support_schedule", (req, res) => {
   const sql = "SELECT * FROM support_schedule";
   db.query(sql, (err, results) => {
     if (err) {
@@ -185,27 +176,29 @@ app.get('/support_schedule', (req, res) => {
   });
 });
 
-app.post('/support_schedule', (req, res) => {
+app.post("/support_schedule", (req, res) => {
   const shiftData = req.body;
 
   if (!shiftData.username) {
-    res.status(400).send({ error: 'Username cannot be null' });
+    res.status(400).send({ error: "Username cannot be null" });
     return;
   }
 
-  const query = 'INSERT INTO support_schedule SET ?';
+  const query = "INSERT INTO support_schedule SET ?";
   db.query(query, shiftData, (err, result) => {
     if (err) {
       console.error(err);
-      res.status(500).send({ error: 'Error inserting data', message: err.message });
+      res
+        .status(500)
+        .send({ error: "Error inserting data", message: err.message });
     } else {
-      res.send({ success: true, message: 'Data inserted successfully' });
+      res.send({ success: true, message: "Data inserted successfully" });
     }
   });
 });
 
+readdirSync("./routes").map((r) => app.use("/api", require("./routes/" + r)));
+
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
-
-

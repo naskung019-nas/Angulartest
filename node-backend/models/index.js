@@ -1,43 +1,51 @@
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+const { Sequelize } = require("sequelize");
+const sequelize = new Sequelize("support_schedule2", "root", "", {
+  host: "localhost",
+  dialect: "mysql",
+  port: "3306",
+  define: {
+    timestamps: false,
+  },
+});
 const db = {};
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+db.sequelize.sync();
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+db.User = require("./user")(sequelize, Sequelize);
+db.SupportSchedule = require("./support_schedule")(sequelize, Sequelize);
+db.Assignment = require("./assignment")(sequelize, Sequelize);
+db.Worksite = require("./work_site")(sequelize, Sequelize);
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
+
+db.SupportSchedule.hasMany(db.User, {
+  foreignKey: { name: "id", field: "id" },
+  sourceKey: "user_id", //<- เป็นการกำหนดว่าใช้ FK ชื่ออะไรเวลาเราเรียกฝช่งานให้เราใช้ name ที่เราตั้ง ในการใช้งานแนะครับ เผื่อเวลาที่เราเปลี่ยนชื่อFKใน database จะได้ไม่งง
+});
+db.SupportSchedule.hasMany(db.Assignment, {
+  foreignKey: { name: "id", field: "id" },
+  sourceKey: "assign_id", //<- เป็นการกำหนดว่าใช้ FK ชื่ออะไรเวลาเราเรียกฝช่งานให้เราใช้ name ที่เราตั้ง ในการใช้งานแนะครับ เผื่อเวลาที่เราเปลี่ยนชื่อFKใน database จะได้ไม่งง
+});
+db.SupportSchedule.hasMany(db.Worksite, {
+  foreignKey: { name: "id", field: "id" },
+  sourceKey: "site_id", //<- เป็นการกำหนดว่าใช้ FK ชื่ออะไรเวลาเราเรียกฝช่งานให้เราใช้ name ที่เราตั้ง ในการใช้งานแนะครับ เผื่อเวลาที่เราเปลี่ยนชื่อFKใน database จะได้ไม่งง
 });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+db.User.belongsTo(db.SupportSchedule, { foreignKey: "id" });
+db.Assignment.belongsTo(db.SupportSchedule, { foreignKey: "id" });
+db.Worksite.belongsTo(db.SupportSchedule, { foreignKey: "id" });
+
+
+
+
+/*db.SupportSchedule.hasMany(db.User, {
+  foreignKey: 'id', // Name of the foreign key in SupportSchedule
+  sourceKey: 'user_id', // Name of the key in User that the foreign key references
+});
+
+db.User.belongsTo(db.SupportSchedule, {
+  foreignKey: 'id', // Name of the foreign key in User
+});*/
 
 module.exports = db;
