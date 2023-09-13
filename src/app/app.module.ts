@@ -27,7 +27,8 @@ import { DataService } from './component/service/data.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
 import {  DatePipe } from '@angular/common';
-
+import { ReactiveFormsModule } from '@angular/forms';
+import {AuthService} from './component/service/auth.service'
 
 
 
@@ -37,7 +38,8 @@ import {  DatePipe } from '@angular/common';
   declarations: [
     AppComponent,
     ChecklistTableComponent,
-    LoginComponent
+    LoginComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -62,12 +64,15 @@ import {  DatePipe } from '@angular/common';
     MatMenuModule,
     MatAutocompleteModule,
     MatTableModule,
+    ReactiveFormsModule,
     ],
   providers: [
     ShiftService,
     DashboardService,
     DataService,
-    DatePipe
+    DatePipe,
+    AuthService
+    
   ],
   bootstrap: [AppComponent]
 })
