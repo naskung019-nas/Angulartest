@@ -28,7 +28,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
 import {  DatePipe } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import {AuthService} from './component/service/auth.service'
+import {AuthService} from './component/service/auth.service';
+import { RegisterComponent } from './component/page/register/register.component'
 
 
 
@@ -39,6 +40,7 @@ import {AuthService} from './component/service/auth.service'
     AppComponent,
     ChecklistTableComponent,
     LoginComponent,
+    RegisterComponent,
 
   ],
   imports: [

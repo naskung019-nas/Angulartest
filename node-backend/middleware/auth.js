@@ -1,5 +1,5 @@
 const { async } = require("rxjs");
-const db = require("../config/db");
+const db = require("../config/database");
 const jwt = require("jsonwebtoken");
 
 exports.auth = (req, res, next) => {

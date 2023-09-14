@@ -1,0 +1,67 @@
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+      <div class="card">
+        <header class="card-header">
+          <h4 class="card-title mt-2 text-center">Sign up</h4>
+        </header>
+        <article class="card-body">
+          <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" formControlName="username" />
+              </div>
+  
+              <div class="col form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" formControlName="password" />
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label for="email">Email address</label>
+              <input type="email" id="email" class="form-control" formControlName="email" />
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="tell">Tell</label>
+                <input type="text" id="tel" class="form-control" formControlName="tel" />
+              </div>
+  
+              <div class="col form-group">
+                <label for="prefix">Prefix</label>
+                <input type="text" id="prefix" class="form-control" formControlName="prefix" />
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label for="nickname">Nickname</label>
+              <input type="text" id="nickname" class="form-control" formControlName="nickname" />
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="firstname">First name</label>
+                <input type="text" id="firstname" class="form-control" formControlName="firstname" />
+              </div>
+  
+              <div class="col form-group">
+                <label for="lastname">Last name</label>
+                <input type="text" id="lastname" class="form-control" formControlName="lastname" />
+              </div>
+            </div>
+  
+            <div class="form-group mt-3 text-center">
+              <button type="submit" class="btn btn-primary btn-block">
+                Register
+              </button>
+            </div>
+          </form>
+        </article>
+  
+        <div class="border-top card-body text-center">
+          Have an account? <a href="">Log In</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -45,3 +45,46 @@ exports.get_schedule = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+exports.get_schedule_id = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const get_id = await SupportSchedule.findByPk(id,{attributes: ['id',"start_time", "end_time"],
+    include: [
+      {
+        model: User,
+        attributes: [
+          "id",
+          "username",
+          "email",
+          "tel",
+          "prefix",
+          "nickname",
+          "firstname",
+          "lastname",
+          "role",
+        ],
+      },
+      {
+        model: Assignment,
+        attributes: ["id","assign_id","name"],
+      },
+      {
+        model: Worksite,
+        attributes: ["id","site_id","site_name"],
+      },
+    ],})
+    
+    // Check if the schedule was found
+    if (!get_id) {
+      return res.status(404).json({ message: "Schedule not found." });
+    }
+
+    // Respond with the retrieved schedule
+    res.status(200).json(get_id);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
