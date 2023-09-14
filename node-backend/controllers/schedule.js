@@ -201,3 +201,62 @@ exports.updateSupportSchedule = async (req, res) => {
     });
   }
 };
+
+
+exports.assignment = async (req, res) => {
+  try {
+
+    const assignments = await Assignment.findAll({
+      attributes: ["id", "assign_id", "name"],
+    });
+    
+
+    if (assignments.length === 0) {
+      return res.status(404).json({ message: "No assignments found." });
+    }
+
+
+    res.status(200).json(assignments);
+  } catch (err) {
+    console.error(err); 
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.worksite = async (req, res) => {
+  try {
+    const worksite = await Worksite.findAll({
+      attributes: ["id", "site_id", "site_name"],
+    });
+    
+    if (worksite.length === 0) {
+      return res.status(404).json({ message: "No worksites found." });
+    }
+
+    res.status(200).json(worksite);
+  } catch (err) {
+    console.error(err); 
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.users = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ["id", "username", "password","email","tel","prefix","nickname","firstname","lastname","role"],
+    });
+    
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found." });
+    }
+
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err); 
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+
+

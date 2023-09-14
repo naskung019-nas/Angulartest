@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ShiftService } from '../../service/shift.service';
-import { DashboardService } from '../../service/dashboard.sevice';
+import { DashboardService } from '../../service/dashboard.service';
 import { DataService } from '../../service/data.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTabGroup } from '@angular/material/tabs';
@@ -18,7 +18,7 @@ export class ChecklistTableComponent implements OnInit {
   filterText: string = '';
   viewType: string = 'grid';
   dashboardSummary: any;
-  hospitals: string = '';
+  hospitals: any = '';
   startTime: string = '';  
   endTime: string = '';
   users: any[] = [];
@@ -26,7 +26,7 @@ export class ChecklistTableComponent implements OnInit {
   workSites: any[] = [];
   filteredWorkSites: any[] = [];
   assignments: any[] = [];
-  type: string = '';
+  type: any = '';
   name: string = '';
   startDate: string = '';
   endDate: string = '';
@@ -37,6 +37,9 @@ export class ChecklistTableComponent implements OnInit {
   selectedWorkSite: string = '';
   searchMonth: number | null = null;
   searchYear: number | null = null;
+  selectedHospitalName: any = '';
+  
+
 
   constructor(
     private shiftService: ShiftService,
@@ -49,37 +52,23 @@ export class ChecklistTableComponent implements OnInit {
 
   
   ngOnInit(): void {
+    this.loadShifts();
     this.loadUsers();
     this.loadWorkSites();
     this.loadAssignments();
-    this.loadSupportSchedule(); 
+
 
   }
 
-  async loadSupportSchedule() {
-    try {
-        this.shifts = await this.dataService.getSupportSchedule();
-        this.shifts.forEach(shift => {
-          const user = this.users.find(u => u.username === shift.username);
-          if(user) {
-            shift.firstname = user.firstname;
-            shift.lastname = user.lastname;
-            shift.email = user.email;
-            if (user.prefix === 'Mr') {
-              shift.prefix = 'นาย';
-          } else if (user.prefix === 'Miss') {
-              shift.prefix = 'นางสาว';
-          } else {
-              shift.prefix = user.prefix; 
-          }
-            shift.nickname = user.nickname;
-          }
-        });
+  loadShifts(): void {
+    this.dataService.getSchedule()
+      .then(data => {
+        this.shifts = data;
         this.filteredShifts = [...this.shifts];
-        this.cdr.detectChanges();
-    } catch (error) {
-        console.error('Error loading support schedule:', error);
-    }
+      })
+      .catch(error => {
+        console.error('Error loading shifts:', error);
+      });
   }
 
 
@@ -97,15 +86,20 @@ export class ChecklistTableComponent implements OnInit {
     const inputValue = (event.target as HTMLInputElement).value;
     if (inputValue) {
       this.filteredUsers = this.users.filter(user => 
+        user && 
+        user.firstname && 
+        user.lastname &&
         (user.firstname + ' ' + user.lastname).toLowerCase().includes(inputValue.toLowerCase())
       );
     } else {
       this.filteredUsers = this.users;  
     }
   }
+  
   displayUser(user: any): string {
-    return user && user.firstname && user.lastname ? `${user.firstname} ${user.lastname}` : '';
+    return user ? user.firstname + ' ' + user.lastname : '';
   }
+  
 
   async loadWorkSites() {
     try {
@@ -130,65 +124,92 @@ export class ChecklistTableComponent implements OnInit {
     }
   }
   addShift() {
-    const shiftData = {
-      username: this.selectedUser ? this.selectedUser.username : null, 
-      assign_typ: this.type,
-      site_name: this.hospitals,
-      start_time: `${this.startDate} ${this.startTime}`, 
-      end_time: `${this.endDate} ${this.endTime}`
-    };
-
-    this.dataService.addShift(shiftData).then(response => {
-        if(response.success) {
-            alert('Data inserted successfully!');
-            window.location.reload();
-        } else {
-            alert(`Error: ${response.message}`);
-        }
-    }).catch(err => {
-        alert('An error occurred while saving data.');
-    });
-  }
-
-  sortTable(field: string): void {
-    if (this.sortField === field) {
-      this.sortAscending = !this.sortAscending;
-    } else {
-      this.sortField = field;
-      this.sortAscending = true;
+    if(!this.selectedUser || !this.type || !this.hospitals || !this.startDate || !this.startTime || !this.endDate || !this.endTime) {
+      alert('Please fill in all the required fields.');
+      return;
     }
   
-    this.shifts.sort((a, b) => {
-      if (a[field] > b[field]) {
-        return this.sortAscending ? 1 : -1;
+    const shiftData = {
+      user_id: this.selectedUser.id, 
+      assign_id: this.type.id,
+      site_id: this.hospitals.id,
+      start_time: `${this.startDate}T${this.startTime}:00`, 
+      end_time: `${this.endDate}T${this.endTime}:00`
+    };
+  
+    this.dataService.addShift(shiftData).then(response => {
+      if (response.success) {
+        alert('Data inserted successfully!');
+        window.location.reload();
+      } else {
+        alert(`Error: ${response.message}`);
       }
-      if (a[field] < b[field]) {
-        return this.sortAscending ? -1 : 1;
-      }
-      return 0;
+    }).catch(err => {
+      console.error(err);
+      alert('An error occurred while saving data.');
     });
   }
+  
 
+  // sortTable(field: string): void {
+  //   if (this.sortField === field) {
+  //     this.sortAscending = !this.sortAscending;
+  //   } else {
+  //     this.sortField = field;
+  //     this.sortAscending = true;
+  //   }
+  
+  //   this.shifts.sort((a, b) => {
+  //     if (a[field] > b[field]) {
+  //       return this.sortAscending ? 1 : -1;
+  //     }
+  //     if (a[field] < b[field]) {
+  //       return this.sortAscending ? -1 : 1;
+  //     }
+  //     return 0;
+  //   });
+  // }
   filterShifts() {
-    console.log(this.selectedWorkSite)
-    let results = this.shifts.filter(shift =>
-      (shift.firstname + ' ' + shift.lastname).toLowerCase().includes(this.filterText.toLowerCase()) ||
-      (shift.start_time ? new Date(shift.start_time).toLocaleDateString() : '').includes(this.filterText) ||
-      (shift.end_time ? new Date(shift.end_time).toLocaleDateString() : '').includes(this.filterText) ||
-      (shift.assign_typ || '').toLowerCase().includes(this.filterText.toLowerCase()) ||
-      (shift.site_name || '').toLowerCase().includes(this.filterText.toLowerCase())
-    );
-
+    let results = this.shifts.filter(shift => {
+      const userString = shift.users && shift.users[0]
+        ? (shift.users[0].firstname + ' ' + shift.users[0].lastname).toLowerCase()
+        : '';
+      const startDateString = shift.start_time 
+        ? new Date(shift.start_time).toLocaleDateString() 
+        : '';
+      const endDateString = shift.end_time 
+        ? new Date(shift.end_time).toLocaleDateString() 
+        : '';
+      const assignmentName = shift.Assignments && shift.Assignments[0]
+        ? shift.Assignments[0].name.toLowerCase()
+        : '';
+      const workSiteName = shift.Worksites && shift.Worksites[0]
+        ? shift.Worksites[0].site_name.toLowerCase()
+        : '';
+      return userString.includes(this.filterText.toLowerCase()) ||
+        startDateString.includes(this.filterText) ||
+        endDateString.includes(this.filterText) ||
+        assignmentName.includes(this.filterText.toLowerCase()) ||
+        workSiteName.includes(this.filterText.toLowerCase());
+    });
+  
     if (this.selectedType) {
-      results = results.filter(shift => shift.assign_typ === this.selectedType);
+      results = results.filter(shift => 
+        shift.Assignments && shift.Assignments[0] && shift.Assignments[0].name === this.selectedType
+      );
     }
-
+  
     if (this.selectedWorkSite) {
-      results = results.filter(shift => shift.site_name === this.selectedWorkSite);
+      results = results.filter(shift => 
+        shift.Worksites && shift.Worksites[0] && shift.Worksites[0].site_name === this.selectedWorkSite
+      );
     }
+  
     this.filteredShifts = results;
-     this.filterByMonthAndYear();
+    this.filterByMonthAndYear();
   }
+  
+
 
   filterByMonthAndYear() {
     if (this.searchMonth !== null && this.searchYear !== null) {
@@ -202,7 +223,7 @@ export class ChecklistTableComponent implements OnInit {
     }
   }
   loadUserProfile(shift: any) {
-    this.selectedUser = shift;
+    this.selectedUser = shift.users[0];
     this.matTabGroup.selectedIndex = 1;
   }
 
@@ -210,7 +231,9 @@ export class ChecklistTableComponent implements OnInit {
     return window.location.reload();
   }
 
-  
+  onHospitalSelected(event: any): void {
+    this.hospitals = event.option.value; 
+}
 
 
 

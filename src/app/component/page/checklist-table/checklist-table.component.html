@@ -18,7 +18,7 @@
                   (input)="filterUsers($event)">
                   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayUser">
                     <mat-option *ngFor="let user of filteredUsers" [value]="user">
-                        {{ user.firstname }} {{ user.lastname }}
+                      {{ user.firstname }} {{ user.lastname }}
                     </mat-option>
                 </mat-autocomplete>              
           </mat-form-field>
@@ -26,26 +26,25 @@
             <mat-form-field>
               <mat-label>ประเภท</mat-label>
               <mat-select [(ngModel)]="type" name="type">
-                  <mat-option *ngFor="let assignment of assignments" [value]="assignment.name" >
-                      {{ assignment.name }}
-                  </mat-option>
-              </mat-select>
+                <mat-option *ngFor="let assignment of assignments" [value]="assignment">
+                    {{ assignment.name }}
+                </mat-option>
+            </mat-select>
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>สถานที่</mat-label>
-                <input 
-                    type="text" 
-                    matInput 
-                    [matAutocomplete]="hospitalsAuto" 
-                    [(ngModel)]="hospitals" 
-                    [ngModelOptions]="{standalone: true}"
-                    (input)="filterWorkSites($event)">
-                <mat-autocomplete #hospitalsAuto="matAutocomplete">
-                  <mat-option *ngFor="let hospital of filteredWorkSites" [value]="hospital.site_name">
-                    {{ hospital.site_name }}
-                  </mat-option>
-                </mat-autocomplete>
+              <input 
+                type="text" 
+                matInput 
+                [matAutocomplete]="hospitalsAuto" 
+                [(ngModel)]="hospitals.site_name" 
+                (input)="filterWorkSites($event)">
+              <mat-autocomplete #hospitalsAuto="matAutocomplete" (optionSelected)="onHospitalSelected($event)">
+                <mat-option *ngFor="let hospital of filteredWorkSites" [value]="hospital">
+                  {{ hospital.site_name }}
+                </mat-option>
+              </mat-autocomplete>
              </mat-form-field>
               <ng-container>      
               <mat-form-field>
@@ -78,10 +77,10 @@
 
           <mat-form-field>
             <mat-label>ประเภท</mat-label>
-            <mat-select [(value)]="selectedType" (selectionChange)="filterShifts()">
+              <mat-select [(value)]="selectedType" (selectionChange)="filterShifts()">
                 <mat-option *ngFor="let assignment of assignments" [value]="assignment.name" >
                     {{ assignment.name }}
-                </mat-option>
+              </mat-option>
             </mat-select>
           </mat-form-field>
 
@@ -116,9 +115,9 @@
                 <td>
                   {{ shift.end_time | date:'dd/MM/yyyy' }} {{ shift.end_time | date:'HH:mm' }}
                 </td>                
-                <td>{{ shift.firstname }} {{ shift.lastname }}</td>
-                <td>{{ shift.assign_typ || '-'  }}</td>
-                <td>{{ shift.site_name || '-' }}</td>
+                <td>{{ shift.users[0].firstname }} {{ shift.users[0].lastname }}</td>
+                <td>{{ shift.Assignments[0]?.name || '-' }}</td>
+                <td>{{ shift.Worksites[0]?.site_name || '-' }}</td>
                 <button (click)="loadUserProfile(shift)">View</button>
               </tr>
             </tbody>
@@ -130,38 +129,40 @@
 
     <mat-tab label="User Profile">
       <div class="userProfile" *ngIf="selectedUser">
-        <p>ชื่อ: {{ selectedUser.prefix }}  {{ selectedUser.firstname }} นามสกุล: {{ selectedUser.lastname }} ชื่อเล่น {{ selectedUser.nickname }}</p>
-        <p>Username: {{ selectedUser.username }} </p>
-        <p>Email: {{ selectedUser.email }} </p>
-        <table class="my-table">
-          <thead> 
-            <tr>
-              <th>ลำดับที่</th>
-              <th>วันเวลาเริ่ม</th>
-              <th>วันเวลาสิ้นสุด</th>
-              <th>ประเภท</th>
-              <th>สถานที่</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-            <ng-container *ngFor="let shift of (filteredShifts); let i = index">
-              <tr *ngIf="shift.username === selectedUser.username">
-                <td>{{ i+1 }}</td>
-                <td>
-                  {{ shift.start_time | date:'dd/MM/yyyy' }} {{ shift.start_time | date:'HH:mm' }}
-                </td>
-                <td>
-                  {{ shift.end_time | date:'dd/MM/yyyy' }} {{ shift.end_time | date:'HH:mm' }}
-                </td>                
-                <td>{{ shift.assign_typ || '-'  }}</td>
-                <td>{{ shift.site_name || '-' }}</td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
+          <p>ชื่อ: {{ selectedUser.prefix }}  {{ selectedUser.firstname }} นามสกุล: {{ selectedUser.lastname }} ชื่อเล่น {{ selectedUser.nickname }}</p>
+          <p>Username: {{ selectedUser.username }} </p>
+          <p>Email: {{ selectedUser.email }} </p>
+          <table class="my-table">
+              <thead> 
+                  <tr>
+                      <th>ลำดับที่</th>
+                      <th>วันเวลาเริ่ม</th>
+                      <th>วันเวลาสิ้นสุด</th>
+                      <th>ชื่อ</th>
+                      <th>ประเภท</th>
+                      <th>สถานที่</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <ng-container *ngFor="let shift of filteredShifts; let i = index">
+                      <tr *ngIf="shift.users[0]?.username === selectedUser.username">
+                          <td>{{ i+1 }}</td>
+                          <td>
+                              {{ shift.start_time | date:'dd/MM/yyyy' }} {{ shift.start_time | date:'HH:mm' }}
+                          </td>
+                          <td>
+                              {{ shift.end_time | date:'dd/MM/yyyy' }} {{ shift.end_time | date:'HH:mm' }}
+                          </td>
+                          <td>{{ shift.users[0]?.firstname }} {{ shift.users[0]?.lastname }}</td>
+                          <td>{{ shift.Assignments[0]?.name || '-' }}</td>
+                          <td>{{ shift.Worksites[0]?.site_name || '-' }}</td>
+                      </tr>
+                  </ng-container>
+              </tbody>
+          </table>
       </div>
-    </mat-tab>
+  </mat-tab>
+  
     
     <mat-tab label="Dashboard">
       <div>
