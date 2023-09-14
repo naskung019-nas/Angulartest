@@ -3,9 +3,9 @@ module.exports = {
     database: {
         host: 'localhost',
         user: 'root',
-        password: '',
+        password: 'root',
         database: 'support_schedule2',
-        port:'3306'
+        port:'8889'
         
     }
 };

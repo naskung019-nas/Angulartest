@@ -22,7 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ShiftService } from './component/service/shift.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatMenuModule } from '@angular/material/menu';
-import { DashboardService } from './component/service/dashboard.sevice';
+import { DashboardService } from './component/service/dashboard.service';
 import { DataService } from './component/service/data.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
