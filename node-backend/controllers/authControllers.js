@@ -44,7 +44,7 @@ exports.register = async (req, res) => {
       res.status(400).json({ error: 'Username is already taken' });
     } else {
       console.error(err);
-      res.status(500).send("Server Error");
+      res.status(500).send("Server Error ครับ");
     }
   }
 };
@@ -80,9 +80,6 @@ exports.login = async (req, res) => {
     };
 
     // Generate Token with a longer expiration time
-    const token = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
-
-    res.json({ token, payload });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
