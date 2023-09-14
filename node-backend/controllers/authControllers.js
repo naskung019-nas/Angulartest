@@ -6,14 +6,22 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const db = require("../models/index");
-const { User, SupportSchedule } = db
+const { User, SupportSchedule } = db;
 db.sequelize.sync();
-
 
 // User registration
 exports.register = async (req, res) => {
   try {
-    const { username, password, email, prefix, nickname, name, lastname } = req.body;
+    const {
+      username,
+      password,
+      email,
+      prefix,
+      nickname,
+      tel,
+      firstname,
+      lastname,
+    } = req.body;
 
     // Hash the password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,14 +33,19 @@ exports.register = async (req, res) => {
       email,
       prefix,
       nickname,
-      name,
+      tel,
+      firstname,
       lastname,
     });
-
     res.json({ message: "Registration successful" });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
+    if (err.name === 'SequelizeUniqueConstraintError') {
+      // Handle unique constraint violation (username is not unique)
+      res.status(400).json({ error: 'Username is already taken' });
+    } else {
+      console.error(err);
+      res.status(500).send("Server Error");
+    }
   }
 };
 
@@ -45,7 +58,9 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ where: { username } });
 
     if (!user) {
-      return res.status(401).json({ message: "Authentication failed: User not found" });
+      return res
+        .status(401)
+        .json({ message: "Authentication failed: User not found" });
     }
 
     const jwtSecret = process.env.JWT_SECRET; // Access the JWT secret from environment variables
@@ -67,7 +82,7 @@ exports.login = async (req, res) => {
     // Generate Token with a longer expiration time
     const token = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
 
-    res.json({ token });
+    res.json({ token, payload });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");

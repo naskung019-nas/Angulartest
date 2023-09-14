@@ -5,6 +5,7 @@ module.exports = (sequelize, Sequelize) => {
     user_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      unique: true,
       defaultValue: 0,
     },
     assign_id: {
