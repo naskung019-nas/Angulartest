@@ -18,6 +18,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { HttpClientModule } from '@angular/common/http';
+import { ShiftService } from './component/service/shift.service';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatMenuModule } from '@angular/material/menu';
+import { DashboardService } from './component/service/dashboard.service';
+import { DataService } from './component/service/data.service';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTableModule } from '@angular/material/table';
+import {  DatePipe } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import {AuthService} from './component/service/auth.service';
+import { RegisterComponent } from './component/page/register/register.component'
+
 
 
 
@@ -26,7 +39,9 @@ import { MatListModule } from '@angular/material/list';
   declarations: [
     AppComponent,
     ChecklistTableComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -46,10 +61,21 @@ import { MatListModule } from '@angular/material/list';
     MatNativeDateModule,
     FormsModule,
     MatListModule,
-
+    HttpClientModule,
+    MatRadioModule,
+    MatMenuModule,
+    MatAutocompleteModule,
+    MatTableModule,
+    ReactiveFormsModule,
+    ],
+  providers: [
+    ShiftService,
+    DashboardService,
+    DataService,
+    DatePipe,
+    AuthService
     
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
